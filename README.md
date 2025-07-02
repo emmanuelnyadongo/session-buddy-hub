@@ -46,7 +46,7 @@ Before running this project, make sure you have the following installed:
 ### 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone emmanuelnyadongo/session-buddy-hub.com
 cd session-buddy-hub
 ```
 
@@ -86,9 +86,6 @@ DB_NAME=session_buddy_hub
 DB_USER=your_postgres_username
 DB_PASSWORD=your_postgres_password
 
-# JWT Configuration
-JWT_SECRET=your_super_secret_jwt_key_here_make_it_long_and_random
-JWT_EXPIRES_IN=7d
 
 # Email Configuration (SMTP)
 SMTP_HOST=smtp.gmail.com
