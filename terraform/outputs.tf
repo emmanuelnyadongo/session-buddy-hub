@@ -8,10 +8,10 @@ output "postgresql_server_name" {
   value       = azurerm_postgresql_flexible_server.db.name
 }
 
-output "acr_login_server" {
-  description = "The login server of the Azure Container Registry."
-  value       = azurerm_container_registry.acr.login_server
-}
+# output "acr_login_server" {
+#   description = "The login server of the Azure Container Registry."
+#   value       = azurerm_container_registry.acr.login_server
+# }
 
 output "webapp_url" {
   description = "The default URL of the Azure Web App."

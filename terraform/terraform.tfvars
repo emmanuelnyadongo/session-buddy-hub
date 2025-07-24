@@ -1,5 +1,5 @@
 resource_group_name = "sbhub-rg"
-location           = "East US"
+location           = "spaincentral"
 db_name            = "sbhub-db"
 db_admin           = "pgadmin"
 db_password        = "SessionBuddyHub2024!"

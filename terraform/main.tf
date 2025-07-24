@@ -31,27 +31,28 @@ resource "azurerm_postgresql_flexible_server" "db" {
   geo_redundant_backup_enabled = false
 }
 
-resource "azurerm_container_registry" "acr" {
-  name                = var.acr_name
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  sku                 = "Basic"
-  admin_enabled       = true
-}
+# These resources already exist in Azure, so we'll reference them directly
+# resource "azurerm_container_registry" "acr" {
+#   name                = var.acr_name
+#   resource_group_name = azurerm_resource_group.main.name
+#   location            = azurerm_resource_group.main.location
+#   sku                 = "Basic"
+#   admin_enabled       = true
+# }
 
-resource "azurerm_service_plan" "app" {
-  name                = "sbhub-app-service-plan"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  os_type             = "Linux"
-  sku_name            = "B1"
-}
+# resource "azurerm_service_plan" "app" {
+#   name                = "sbhub-app-service-plan"
+#   resource_group_name = azurerm_resource_group.main.name
+#   location            = azurerm_resource_group.main.location
+#   os_type             = "Linux"
+#   sku_name            = "B1"
+# }
 
 resource "azurerm_linux_web_app" "web" {
   name                = var.webapp_name
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
-  service_plan_id     = azurerm_service_plan.app.id
+  service_plan_id     = "/subscriptions/b936571e-af68-4dfe-8565-5410d483d1a5/resourceGroups/sbhub-rg/providers/Microsoft.Web/serverFarms/sbhub-app-service-plan"
   
   site_config {
     application_stack {
