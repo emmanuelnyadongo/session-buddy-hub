@@ -2,6 +2,12 @@
 
 A collaborative study session platform built with React, Node.js, and PostgreSQL. Connect with fellow students, create study sessions, and enhance your learning experience together.
 
+## 🌐 Live Application
+
+**Live URL:** https://sbhubwebapp2024.azurewebsites.net
+
+The application is deployed on Azure using Docker containers and Azure App Service.
+
 ## Features
 
 - 🔐 **Secure Authentication** - JWT-based authentication with email verification

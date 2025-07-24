@@ -2,9 +2,7 @@
 
 ## Live Public URL
 
-> Paste the live, public URL of your deployed application here:
->
-> **https://sbhubwebapp2024.azurewebsites.net**
+**https://sbhubwebapp2024.azurewebsites.net**
 
 ---
 
