@@ -46,8 +46,7 @@
 
 *This screenshot shows the Azure Web App (sbhubwebapp2024) Configuration page with General settings. The web app is configured for container deployment with platform settings for SCM and FTP authentication enabled. The startup command field is available for custom container startup instructions.*
 
-**Additional Screenshots Needed:**
-- [ ] Screenshot 4: Database Connection (optional)
+
 
 ---
 
