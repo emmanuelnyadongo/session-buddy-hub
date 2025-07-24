@@ -1,25 +1,33 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const compression = require('compression');
-const morgan = require('morgan');
-const dotenv = require('dotenv');
-const path = require('path');
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import compression from 'compression';
+import morgan from 'morgan';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 // Import routes
-const authRoutes = require('./routes/auth.js');
-const userRoutes = require('./routes/users.js');
-const sessionRoutes = require('./routes/sessions.js');
-const { errorHandler } = require('./middleware/errorHandler.js');
-const { notFound } = require('./middleware/notFound.js');
-const { authenticateToken } = require('./middleware/auth.js');
+import { router as authRoutes } from './routes/auth.js';
+import { router as userRoutes } from './routes/users.js';
+import { router as sessionRoutes } from './routes/sessions.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import { notFound } from './middleware/notFound.js';
+import { authenticateToken } from './middleware/auth.js';
+
+// ES module __dirname equivalent
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Trust proxy for rate limiting (needed for Azure App Service)
+app.set('trust proxy', 1);
 
 // Security middleware
 app.use(helmet({
@@ -49,7 +57,11 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: [
+    process.env.FRONTEND_URL || 'http://localhost:5173',
+    'https://sbhubwebapp2024.azurewebsites.net',
+    'https://sbhubwebapp2024.azurewebsites.net/'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -82,10 +94,14 @@ app.use('/api/sessions', authenticateToken, sessionRoutes);
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../../dist')));
+  console.log('__dirname:', __dirname);
+  console.log('Static path:', path.join(__dirname, '../dist'));
+  console.log('Index path:', path.join(__dirname, '../dist/index.html'));
+  
+  app.use(express.static(path.join(__dirname, '../dist')));
   
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../dist/index.html'));
+    res.sendFile(path.join(__dirname, '../dist/index.html'));
   });
 }
 
@@ -98,6 +114,4 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 API URL: http://localhost:${PORT}/api`);
-});
-
-module.exports = app; 
+}); 

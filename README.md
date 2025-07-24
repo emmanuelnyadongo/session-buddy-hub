@@ -2,6 +2,12 @@
 
 A collaborative study session platform built with React, Node.js, and PostgreSQL. Connect with fellow students, create study sessions, and enhance your learning experience together.
 
+## 🌐 Live Application
+
+**Live URL:** https://sbhubwebapp2024.azurewebsites.net
+
+The application is deployed on Azure using Docker containers and Azure App Service.
+
 ## Features
 
 - 🔐 **Secure Authentication** - JWT-based authentication with email verification
@@ -46,7 +52,7 @@ Before running this project, make sure you have the following installed:
 ### 1. Clone the repository
 
 ```bash
-git clone emmanuelnyadongo/session-buddy-hub.com
+
 cd session-buddy-hub
 ```
 
@@ -152,6 +158,81 @@ cd backend
 npm start
 ```
 
+## Docker-based Local Development
+
+You can run the entire stack (backend, frontend, and database) locally using Docker Compose.
+
+### Prerequisites
+- [Docker](https://www.docker.com/get-started) installed
+- [Docker Compose](https://docs.docker.com/compose/install/) (if not included with Docker Desktop)
+
+### Steps
+1. Copy the backend environment example:
+   ```sh
+   cp backend/env.example backend/.env
+   # Edit backend/.env as needed
+   ```
+2. Build and start all services:
+   ```sh
+   docker-compose up --build
+   ```
+3. The backend API will be available at [http://localhost:5000/api](http://localhost:5000/api)
+4. The frontend will be available at [http://localhost:5173](http://localhost:5173)
+5. To stop the services:
+   ```sh
+   docker-compose down
+   ```
+
+> **Reminder:** Before running Docker Compose, copy `backend/env.example` to `backend/.env` and update values as needed.
+
+---
+
+## Azure Deployment Guide
+
+### 1. Provision Azure Resources with Terraform
+1. Install [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) and [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
+2. Login to Azure:
+   ```sh
+   az login
+   ```
+3. Go to the terraform directory:
+   ```sh
+   cd terraform
+   ```
+4. Copy and edit terraform.tfvars:
+   ```sh
+   cp terraform.tfvars terraform.tfvars # Edit values as needed
+   ```
+5. Initialize and apply Terraform:
+   ```sh
+   terraform init
+   terraform apply
+   ```
+
+### 2. Build and Push Docker Image to Azure Container Registry (ACR)
+1. Get ACR login server from Terraform output or Azure Portal.
+2. Login to ACR:
+   ```sh
+   az acr login --name <acr_name>
+   ```
+3. Build and tag your Docker image:
+   ```sh
+   docker build -t <acr_login_server>/session-buddy-hub:latest .
+   ```
+4. Push the image:
+   ```sh
+   docker push <acr_login_server>/session-buddy-hub:latest
+   ```
+
+### 3. Deploy to Azure Web App for Containers
+1. In the Azure Portal, go to your Web App resource.
+2. Set the container image to `<acr_login_server>/session-buddy-hub:latest`.
+3. Set environment variables (DATABASE_URL, NODE_ENV, etc.) in the Web App Configuration.
+4. Save and restart the Web App.
+5. Your app will be live at the Web App URL (see Terraform output or Azure Portal).
+
+---
+
 ## API Endpoints
 
 ### Authentication
@@ -207,24 +288,4 @@ The application uses the following main tables:
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Support
-
-If you encounter any issues or have questions, please:
-
-1. Check the [Issues](https://github.com/your-repo/issues) page
-2. Create a new issue with detailed information
-3. Contact the development team
-
-## Acknowledgments
-
-- [Shadcn/ui](https://ui.shadcn.com/) for the beautiful UI components
-- [Tailwind CSS](https://tailwindcss.com/) for the utility-first CSS framework
-- [React Query](https://tanstack.com/query) for efficient data fetching
-- [Lucide React](https://lucide.dev/) for the icon library
+4. Push to the branch (`
