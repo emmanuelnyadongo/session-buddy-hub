@@ -47,11 +47,7 @@
 
 ## Reflection
 
-**Instructions:** Write a brief reflection (2-3 paragraphs) about your experience with Terraform (IaC) and the manual deployment process.
-
-**Your Reflection:**
-
-My experience with Infrastructure as Code (IaC) using Terraform and the manual deployment process has been both challenging and enlightening. Initially, I found the concept of defining infrastructure through code to be quite abstract, but as I worked through the process, I began to appreciate its power and efficiency.
+*My experience with Infrastructure as Code (IaC) using Terraform and the manual deployment process has been both challenging and enlightening. Initially, I found the concept of defining infrastructure through code to be quite abstract, but as I worked through the process, I began to appreciate its power and efficiency.
 
 The biggest challenges I encountered were related to Azure-specific configurations and regional restrictions. I learned that Azure has strict policies about which regions can be used, and I had to adapt my Terraform configuration from the default region to `spaincentral` to comply with Azure's policy requirements. This taught me the importance of understanding cloud provider constraints and the value of IaC in quickly adapting to such requirements. Additionally, I faced issues with Node.js module systems when transitioning from CommonJS to ES modules, which required significant debugging and code refactoring to ensure compatibility with the containerized environment.
 
