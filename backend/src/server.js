@@ -9,9 +9,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 // Import routes
-import authRoutes from './routes/auth.js';
-import userRoutes from './routes/users.js';
-import sessionRoutes from './routes/sessions.js';
+import { router as authRoutes } from './routes/auth.js';
+import { router as userRoutes } from './routes/users.js';
+import { router as sessionRoutes } from './routes/sessions.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFound } from './middleware/notFound.js';
 import { authenticateToken } from './middleware/auth.js';

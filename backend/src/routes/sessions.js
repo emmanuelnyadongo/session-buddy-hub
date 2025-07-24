@@ -590,4 +590,4 @@ router.post('/:sessionId/messages', [
   }
 });
 
-module.exports = router; 
+export { router }; 
