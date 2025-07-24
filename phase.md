@@ -25,11 +25,15 @@
 - **sbhub-app-service-plan**: App Service Plan
 - All resources in **sbhub-rg** resource group, **Spain Central** region
 
+**Live Application Screenshot:**
+![Live Application](live-application-screenshot.png)
+
+*This screenshot shows the Session Buddy Hub application running successfully in the browser at the live URL.*
+
 **Additional Screenshots Needed:**
 - [ ] Screenshot 2: Azure Container Registry with Docker image
 - [ ] Screenshot 3: Azure Web App configuration
-- [ ] Screenshot 4: Live Application running in browser
-- [ ] Screenshot 5: Database Connection (optional)
+- [ ] Screenshot 4: Database Connection (optional)
 
 ---
 
