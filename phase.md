@@ -30,20 +30,25 @@
 
 *This screenshot shows the Session Buddy Hub application running successfully in the browser at the live URL.*
 
-**Additional Screenshots Needed:**
-- [ ] Screenshot 2: Azure Container Registry with Docker image
-- [ ] Screenshot 3: Azure Web App configuration
-- [ ] Screenshot 4: Database Connection (optional)
+**Azure Container Registry Screenshot:**
+![Azure Container Registry](azure-acr-screenshot.png)
 
----
+*This screenshot shows the Azure Container Registry (sbhubacr2024) overview. The registry contains the Docker image "session-buddy-hub:latest" which was successfully pushed and is being used by the web application. The login server "sbhubacr2024.azurecr.io" is used for Docker push/pull operations.*
 
-## Peer Review Link
+**Docker Image Verification:**
+- **Repository:** session-buddy-hub
+- **Tag:** latest
+- **Status:** Successfully pushed and deployed
+- **Registry:** sbhubacr2024.azurecr.io
 
-**Instructions:** Review a peer's pull request and paste the link here.
+**Azure Web App Configuration Screenshot:**
+![Azure Web App Configuration](azure-webapp-config-screenshot.png)
 
-**Peer Review Link:** [Add your peer review link here]
+*This screenshot shows the Azure Web App (sbhubwebapp2024) Configuration page with General settings. The web app is configured for container deployment with platform settings for SCM and FTP authentication enabled. The startup command field is available for custom container startup instructions.*
 
----
+
+
+
 
 ## Reflection
 
