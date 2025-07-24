@@ -48,15 +48,7 @@
 
 
 
----
 
-## Peer Review Link
-
-**Instructions:** Review a peer's pull request and paste the link here.
-
-**Peer Review Link:** [Add your peer review link here]
-
----
 
 ## Reflection
 
