@@ -1,19 +1,24 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const compression = require('compression');
-const morgan = require('morgan');
-const dotenv = require('dotenv');
-const path = require('path');
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import compression from 'compression';
+import morgan from 'morgan';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 // Import routes
-const authRoutes = require('./routes/auth.js');
-const userRoutes = require('./routes/users.js');
-const sessionRoutes = require('./routes/sessions.js');
-const { errorHandler } = require('./middleware/errorHandler.js');
-const { notFound } = require('./middleware/notFound.js');
-const { authenticateToken } = require('./middleware/auth.js');
+import authRoutes from './routes/auth.js';
+import userRoutes from './routes/users.js';
+import sessionRoutes from './routes/sessions.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import { notFound } from './middleware/notFound.js';
+import { authenticateToken } from './middleware/auth.js';
+
+// ES module __dirname equivalent
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load environment variables
 dotenv.config();

@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import crypto from 'crypto';
 
 dotenv.config();
 
@@ -16,7 +17,7 @@ const transporter = nodemailer.createTransport({
 
 export const sendVerificationEmail = async (email, name) => {
   try {
-    const verificationToken = require('crypto').randomBytes(32).toString('hex');
+    const verificationToken = crypto.randomBytes(32).toString('hex');
     
     // Update user with verification token
     const { execute } = await import('../config/database.js');

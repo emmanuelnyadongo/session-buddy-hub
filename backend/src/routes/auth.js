@@ -1,6 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
+import crypto from 'crypto';
 import { getRow, execute } from '../config/database.js';
 import { generateToken } from '../middleware/auth.js';
 import { sendVerificationEmail, sendPasswordResetEmail } from '../utils/email.js';
@@ -204,7 +205,7 @@ router.post('/forgot-password', [
     }
 
     // Generate reset token
-    const resetToken = require('crypto').randomBytes(32).toString('hex');
+    const resetToken = crypto.randomBytes(32).toString('hex');
     const resetExpires = new Date(Date.now() + 3600000); // 1 hour
 
     // Save reset token
