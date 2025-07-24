@@ -52,7 +52,7 @@ Before running this project, make sure you have the following installed:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/emmanuelnyadongo/session-buddy-hub.git
+
 cd session-buddy-hub
 ```
 
