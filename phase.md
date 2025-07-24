@@ -41,8 +41,12 @@
 - **Status:** Successfully pushed and deployed
 - **Registry:** sbhubacr2024.azurecr.io
 
+**Azure Web App Configuration Screenshot:**
+![Azure Web App Configuration](azure-webapp-config-screenshot.png)
+
+*This screenshot shows the Azure Web App (sbhubwebapp2024) Configuration page with General settings. The web app is configured for container deployment with platform settings for SCM and FTP authentication enabled. The startup command field is available for custom container startup instructions.*
+
 **Additional Screenshots Needed:**
-- [ ] Screenshot 3: Azure Web App configuration
 - [ ] Screenshot 4: Database Connection (optional)
 
 ---
