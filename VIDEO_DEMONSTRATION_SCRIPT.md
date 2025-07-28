@@ -1,194 +1,203 @@
 # Video Demonstration Script - Phase 3 Assessment
+## Session Buddy Hub - CI/CD Pipeline Demonstration
 
-## Overview
-This script follows the exact 5-stage sequence required for the Phase 3 video demonstration. Total time: 10 minutes maximum.
+### **STAGE 1: Initial State** (0:00 - 2:00)
 
-## Pre-Recording Setup
-1. **Prepare your environment**:
-   - Have both staging and production URLs ready
-   - Ensure GitHub repository is accessible
-   - Have a feature branch ready for demonstration
-   - Test the complete pipeline beforehand
+**Files to Open:**
+- Browser: `https://sbhubwebapp2024.azurewebsites.net`
+- GitHub Repository: `https://github.com/emmanuelnyadongo/session-buddy-hub`
 
-2. **Recording requirements**:
-   - High-quality screen recording (minimum 720p)
-   - Clear audio narration
-   - Supported format: MP4, MOV, or AVI
-   - Maximum file size: 500MB
+**Script:**
+"Hello, my name is Emmanuel Nyadongo, and welcome to my Phase 3 assessment video demonstration. Today I'll be showcasing the complete CI/CD pipeline for my Session Buddy Hub application.
 
-## Stage 1: Initial State (1 minute)
+Let me start by showing you the currently deployed production application. I'll navigate to the production URL..."
 
-### Script:
-"Hello, my name is [Your Name], and I'm demonstrating the Phase 3 Continuous Deployment implementation for Session Buddy Hub. Let me start by showing you the currently deployed production application."
+*[Open browser and navigate to production URL]*
 
-### Actions:
-1. **Open browser** and navigate to: `https://sbhubwebapp2024.azurewebsites.net`
-2. **Demonstrate functionality**:
-   - Show the login page
-   - Navigate through the application
-   - Confirm it's live and functional
-3. **State clearly**: "This is our production environment, currently running version [current version]"
+"As you can see, the Session Buddy Hub application is live and fully functional. The application features a modern, responsive interface with authentication capabilities, study session management, and a clean user experience. The application is successfully deployed on Azure Web Apps and is accessible to users worldwide.
 
-### Key Points:
-- Application is live and functional
-- Clear identification of production environment
+Let me also show you the GitHub repository where all our code is managed..."
+
+*[Open GitHub repository]*
+
+"This is our main repository where we maintain our codebase, track changes, and manage our deployment pipeline. You can see we have a well-structured project with proper branching strategy."
+
+---
+
+### **STAGE 2: Code Modification** (2:00 - 5:00)
+
+**Files to Open:**
+- VS Code/Cursor: `src/pages/Index.tsx`
+- Terminal/Git Bash
+
+**Script:**
+"Now I'll demonstrate the development workflow by making a small, visible code change. I'll modify the welcome message on the homepage to show how our CI/CD pipeline handles code changes.
+
+Let me open the main Index component..."
+
+*[Open src/pages/Index.tsx in editor]*
+
+"I'll make a simple but visible change to the welcome message. Let me update the hero section text to demonstrate our deployment process."
+
+*[Make the following change in the hero section: Change "Welcome to StudyBuddy Hub" to "Welcome to StudyBuddy Hub - Phase 3 Demo"]*
+
+"Perfect! I've made a visible change to the welcome message. Now I'll follow the Conventional Commits standard to commit this change. Let me create a new feature branch first..."
+
+*[In terminal: `git checkout -b feature/demo-welcome-update`]*
+
+"Now I'll add the changes and commit them using the Conventional Commits format..."
+
+*[In terminal: `git add src/pages/Index.tsx`]*
+*[In terminal: `git commit -m "feat: update welcome message for Phase 3 demonstration"`]*
+
+"Notice I'm using the 'feat:' prefix as per Conventional Commits standard, followed by a clear description of the change. Now I'll push this to the new feature branch..."
+
+*[In terminal: `git push origin feature/demo-welcome-update`]*
+
+"Excellent! The change has been pushed to the feature branch. Let me show you the commit in our repository..."
+
+*[Navigate to GitHub repository and show the new commit]*
+
+"As you can see, our commit is now visible in the repository with the proper Conventional Commits format."
+
+---
+
+### **STAGE 3: Staging Deployment** (5:00 - 10:00)
+
+**Files to Open:**
+- GitHub: Create Pull Request
+- GitHub Actions: `https://github.com/emmanuelnyadongo/session-buddy-hub/actions`
+- Browser: `https://sbhubwebapp2024-staging.azurewebsites.net`
+
+**Script:**
+"Now I'll create a pull request to merge our changes into the develop branch, which will trigger our staging deployment pipeline."
+
+*[Create Pull Request from feature/demo-welcome-update to develop]*
+
+"I'm creating a pull request with a descriptive title and detailed description of the changes. This will automatically trigger our CI/CD pipeline."
+
+*[Show the pull request being created]*
+
+"Perfect! The pull request has been created and our pipeline is now executing. Let me navigate to the GitHub Actions tab to show you the build process..."
+
+*[Navigate to GitHub Actions]*
+
+"Here you can see our comprehensive CI/CD pipeline in action. Let me explain each stage:
+
+**Build Process:** The pipeline starts by checking out the code and setting up the Node.js environment. It then installs dependencies for both frontend and backend, runs security audits, and performs static code analysis using CodeQL for security vulnerabilities.
+
+**Testing Procedures:** Our pipeline includes comprehensive testing - we run Jest tests for the backend API, Vitest tests for the frontend components, and perform type checking with TypeScript. All tests must pass before deployment can proceed.
+
+**Security Scanning:** We use multiple security measures including npm audit for dependency vulnerabilities, CodeQL for static application security testing, and Trivy for container vulnerability scanning. This ensures our application is secure before deployment.
+
+**Container Build:** The pipeline builds a Docker container with our application and pushes it to Azure Container Registry, ensuring consistent deployment across environments."
+
+*[Show pipeline progress and explain each step as it executes]*
+
+"Now let's wait for the pipeline to complete and then demonstrate the change on our staging environment..."
+
+*[Wait for pipeline completion]*
+
+"Excellent! The pipeline has completed successfully. All tests passed, security scans are clean, and the container has been built and deployed. Now let me show you the staging environment..."
+
+*[Navigate to staging URL]*
+
+"As you can see, our change is now live on the staging environment. The welcome message has been updated to 'Welcome to StudyBuddy Hub - Phase 3 Demo'. This staging environment allows us to test changes in a production-like environment before deploying to production."
+
+---
+
+### **STAGE 4: Production Release** (10:00 - 12:00)
+
+**Files to Open:**
+- GitHub: Merge Pull Request
+- GitHub Actions: Production deployment
+- Azure Portal: Application monitoring
+
+**Script:**
+"Now I'll demonstrate the production release process. First, I'll merge our changes into the main branch, which will trigger the production deployment pipeline."
+
+*[Merge the pull request to main branch]*
+
+"The pull request has been merged to main, which automatically triggers our production deployment pipeline. Let me show you the production deployment process..."
+
+*[Navigate to GitHub Actions to show production deployment]*
+
+"Notice that our production deployment includes additional security measures and requires manual approval for critical deployments. This is a best practice for production environments.
+
+Let me explain our monitoring and alerting configuration:
+
+**Monitoring Dashboard:** We have comprehensive monitoring set up in Azure Application Insights that tracks application performance, user behavior, and system health. This includes response times, error rates, and resource utilization.
+
+**Alarm Configuration:** We've configured alerts for critical metrics such as high error rates, slow response times, and resource exhaustion. These alerts are sent to our development team to ensure quick response to any issues.
+
+**Health Checks:** Our application includes automated health checks that verify the application is running correctly and can handle requests."
+
+*[Show Azure monitoring dashboard if available]*
+
+---
+
+### **STAGE 5: Verification** (12:00 - 14:00)
+
+**Files to Open:**
+- Browser: Refresh production URL
+- GitHub: CHANGELOG.md
+
+**Script:**
+"Now let's verify that our changes have been successfully deployed to production. I'll refresh the production URL..."
+
+*[Refresh production URL]*
+
+"Perfect! As you can see, our welcome message change is now live on the production environment. The text now reads 'Welcome to StudyBuddy Hub - Phase 3 Demo', confirming that our automated deployment was successful.
+
+Let me also show you the updated CHANGELOG.md file, which automatically tracks all our deployments..."
+
+*[Open CHANGELOG.md in GitHub]*
+
+"Here you can see the automated CHANGELOG entry that was created during the deployment process. It includes the deployment date, commit hash, and the person who triggered the deployment. This provides a complete audit trail of all changes.
+
+**Summary of Successful Automated Deployment:**
+
+Our CI/CD pipeline has successfully demonstrated:
+
+1. **Automated Testing:** All tests passed automatically
+2. **Security Scanning:** Multiple security checks completed successfully
+3. **Staging Deployment:** Changes were deployed to staging for testing
+4. **Production Deployment:** Changes were safely deployed to production
+5. **Monitoring:** Comprehensive monitoring and alerting is in place
+6. **Documentation:** Automated CHANGELOG updates provide deployment history
+
+This demonstrates a complete, professional-grade CI/CD pipeline that ensures code quality, security, and reliable deployments. The entire process from code change to production deployment was automated and completed successfully.
+
+Thank you for watching my Phase 3 assessment demonstration!"
+
+---
+
+## **Technical Notes for Recording:**
+
+### **Key Points to Emphasize:**
+- Clear demonstration of each pipeline stage
+- Explanation of security measures
+- Show of automated testing
+- Professional presentation style
+
+### **Files to Have Ready:**
+1. Production URL: `https://sbhubwebapp2024.azurewebsites.net`
+2. Staging URL: `https://sbhubwebapp2024-staging.azurewebsites.net`
+3. GitHub Repository: `https://github.com/emmanuelnyadongo/session-buddy-hub`
+4. GitHub Actions: Repository Actions tab
+5. VS Code/Cursor with project open
+
+### **Timing Guidelines:**
+- Stage 1: 2 minutes
+- Stage 2: 3 minutes
+- Stage 3: 5 minutes
+- Stage 4: 2 minutes
+- Stage 5: 2 minutes
+- **Total: 14 minutes**
+
+### **Success Criteria:**
+- All 5 stages completed
+- Clear demonstration of CI/CD pipeline
 - Professional presentation
-
----
-
-## Stage 2: Code Modification (2 minutes)
-
-### Script:
-"Now I'll demonstrate the automated deployment process by making a small, visible code change and pushing it through our CI/CD pipeline."
-
-### Actions:
-1. **Open your code editor** and navigate to a visible UI component
-2. **Make a small change** (e.g., modify text in a component):
-   ```jsx
-   // Example: Change a heading or button text
-   <h1>Welcome to Session Buddy Hub - Updated!</h1>
-   ```
-3. **Commit using conventional commit format**:
-   ```bash
-   git add .
-   git commit -m "feat: update welcome message for demo"
-   git push origin feature/demo-update
-   ```
-4. **Show the commit in repository**:
-   - Navigate to GitHub repository
-   - Show the commit history
-   - Point out the conventional commit format
-
-### Key Points:
-- Use conventional commit format
-- Make a visible, demonstrable change
-- Show the commit in the repository
-
----
-
-## Stage 3: Staging Deployment (3 minutes)
-
-### Script:
-"Now I'll create a pull request to merge into the develop branch, which will trigger our automated staging deployment. Let me walk you through the pipeline execution."
-
-### Actions:
-1. **Create pull request**:
-   - Go to GitHub repository
-   - Create PR from feature branch to develop
-   - Show the PR creation process
-
-2. **Explain pipeline execution** (while it runs):
-   - **Security Scanning**: "First, our pipeline runs security scans including dependency vulnerability scanning and container image scanning with Trivy."
-   - **Build Process**: "Next, it builds the application and runs our comprehensive test suite."
-   - **Testing**: "We have automated tests for both frontend and backend components."
-   - **Container Build**: "The pipeline then builds a Docker container and scans it for vulnerabilities."
-
-3. **Show staging deployment**:
-   - Wait for pipeline completion
-   - Navigate to: `https://sbhubwebapp2024-staging.azurewebsites.net`
-   - Show the updated change on staging
-   - Point out: "Notice how the change is now live on staging, but not yet on production."
-
-### Key Points:
-- Explain each pipeline stage clearly
-- Show real-time pipeline execution
-- Demonstrate staging environment
-- Highlight the separation between staging and production
-
----
-
-## Stage 4: Production Release (2 minutes)
-
-### Script:
-"Now I'll merge the changes into the main branch, which will trigger our production deployment with manual approval."
-
-### Actions:
-1. **Merge to main**:
-   - Create PR from develop to main
-   - Show the manual approval step
-   - Explain: "Production deployments require manual approval for safety."
-
-2. **Explain monitoring dashboard**:
-   - Show monitoring configuration
-   - Point out health check endpoints
-   - Explain alarm configuration:
-     - "We have alarms set up for high error rates, response times, and database issues."
-     - "Our health check endpoint monitors application status."
-
-3. **Show production deployment**:
-   - Wait for deployment completion
-   - Navigate to production URL
-   - Show the change is now live
-
-### Key Points:
-- Emphasize manual approval for production
-- Explain monitoring and alerting
-- Show successful production deployment
-
----
-
-## Stage 5: Verification (2 minutes)
-
-### Script:
-"Finally, let me verify the successful deployment and show you our updated documentation."
-
-### Actions:
-1. **Refresh production URL**:
-   - Navigate to: `https://sbhubwebapp2024.azurewebsites.net`
-   - Show the updated change is live
-   - Confirm application is fully functional
-
-2. **Show updated CHANGELOG.md**:
-   - Open CHANGELOG.md in repository
-   - Point out the new entry for the deployment
-   - Explain: "Our pipeline automatically updates the changelog with deployment information."
-
-3. **Summary**:
-   - "We've successfully demonstrated a complete automated deployment from code change to production."
-   - "The pipeline includes security scanning, testing, and monitoring."
-   - "Staging provides a safe environment for testing before production deployment."
-
-### Key Points:
-- Confirm successful deployment
-- Show automated documentation updates
-- Provide clear summary of the process
-
----
-
-## Technical Talking Points (Prepare for Oral Viva)
-
-### DevOps Principles:
-- **Continuous Integration**: "We integrate code changes frequently and automatically test them."
-- **Continuous Deployment**: "We automate the deployment process while maintaining safety controls."
-- **Infrastructure as Code**: "Our Azure resources are defined in Terraform for consistency and version control."
-
-### Security Implementation:
-- **Dependency Scanning**: "We scan for known vulnerabilities in our dependencies."
-- **Container Scanning**: "We scan our Docker images for security issues before deployment."
-- **SAST**: "We use CodeQL for static application security testing."
-
-### Monitoring Strategy:
-- **Health Checks**: "We have automated health checks to ensure application availability."
-- **Alerts**: "We have configured alerts for critical issues like high error rates."
-- **Logging**: "We have comprehensive logging for troubleshooting and monitoring."
-
-### Technical Decisions:
-- **Branch Strategy**: "We use develop for staging and main for production to separate concerns."
-- **Manual Approval**: "Production deployments require manual approval to prevent accidental deployments."
-- **Containerization**: "We use Docker for consistent deployment across environments."
-
-## Recording Tips
-
-1. **Practice the flow** before recording
-2. **Have all URLs bookmarked** for quick access
-3. **Speak clearly and professionally**
-4. **Show confidence in your technical knowledge**
-5. **Keep to the time limit** (10 minutes maximum)
-6. **Ensure good video and audio quality**
-
-## Post-Recording
-
-1. **Upload video** to the learning management system
-2. **Include video link** in repository README.md
-3. **Ensure video is accessible** for the assessment period
-4. **Prepare for oral viva** questions based on the demonstration 
+- Technical accuracy
+- Smooth transitions between stages 
