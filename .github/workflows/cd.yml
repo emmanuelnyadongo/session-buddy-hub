@@ -204,16 +204,54 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         
+    - name: Check and setup staging database
+      run: |
+        echo "=== Checking Staging Database ==="
+        # Check if staging database exists
+        DB_EXISTS=$(az postgres flexible-server db list --server-name sbhub-db --resource-group sbhub-rg --query "[?name=='session_buddy_hub_staging'].name" -o tsv)
+        
+        if [ -z "$DB_EXISTS" ]; then
+          echo "Creating staging database..."
+          az postgres flexible-server db create --server-name sbhub-db --resource-group sbhub-rg --database-name session_buddy_hub_staging
+        else
+          echo "Staging database already exists"
+        fi
+        
     - name: Deploy to Azure Web App (Staging)
       uses: azure/webapps-deploy@v3
       with:
         app-name: 'sbhubwebapp2024-staging'
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
         
+    - name: Configure staging environment variables
+      run: |
+        echo "=== Setting up Staging Environment Variables ==="
+        az webapp config appsettings set --name sbhubwebapp2024-staging --resource-group sbhub-rg --settings \
+          NODE_ENV="staging" \
+          DB_HOST="sbhub-db.postgres.database.azure.com" \
+          DB_PORT="5432" \
+          DB_NAME="session_buddy_hub_staging" \
+          DB_USER="pgadmin" \
+          DB_PASSWORD="SessionBuddyHub2024!" \
+          JWT_SECRET="your-super-secret-jwt-key-here-make-it-long-and-random" \
+          FRONTEND_URL="https://sbhubwebapp2024-staging.azurewebsites.net"
+        
     - name: Check deployment logs
       run: |
         echo "Checking deployment status..."
         az webapp log tail --name sbhubwebapp2024-staging --resource-group sbhub-rg --timeout 30 || echo "Log tail timeout - this is normal"
+        
+    - name: Check web app configuration
+      run: |
+        echo "=== Checking Web App Configuration ==="
+        az webapp config show --name sbhubwebapp2024-staging --resource-group sbhub-rg --query "linuxFxVersion"
+        echo "=== Checking App Settings ==="
+        az webapp config appsettings list --name sbhubwebapp2024-staging --resource-group sbhub-rg --query "[].{name:name, value:value}"
+        
+    - name: Check web app status
+      run: |
+        echo "=== Checking Web App Status ==="
+        az webapp show --name sbhubwebapp2024-staging --resource-group sbhub-rg --query "{state:state, hostNames:hostNames, defaultHostName:defaultHostName}"
         
     - name: Health check staging deployment
       run: |
