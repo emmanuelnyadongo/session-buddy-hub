@@ -6,6 +6,13 @@ on:
   pull_request:
     branches: [ develop, main ]
 
+# Add permissions for CodeQL and security scanning
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  pull-requests: read
+
 env:
   REGISTRY: sbhubacr2024.azurecr.io
   IMAGE_NAME: session-buddy-hub
@@ -45,6 +52,8 @@ jobs:
         
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
+      with:
+        upload: false  # Disable upload if permissions are not available
       
     - name: Upload security results
       uses: actions/upload-artifact@v4

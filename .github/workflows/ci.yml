@@ -6,6 +6,13 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+# Add permissions for security scanning
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  pull-requests: read
+
 jobs:
   # Frontend CI
   frontend:
