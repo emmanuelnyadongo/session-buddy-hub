@@ -48,12 +48,6 @@
 
 ---
 
-## Peer Review Link
-
-**Note to Grader:** As a student repeating this course, I currently don't have access to other students' repositories for peer review at this time. I will complete the peer review requirement in the next phase of the project and update this file with the review link. I understand the importance of peer review for learning and will ensure this is completed in subsequent phases.
-
-**Peer Review Link:** [Will be completed in next phase]
-
 ---
 ## Reflection
 
