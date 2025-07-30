@@ -70,4 +70,29 @@ resource "azurerm_linux_web_app" "web" {
     JWT_SECRET   = "your-super-secret-jwt-key-here-make-it-long-and-random"
     FRONTEND_URL = "https://${var.webapp_name}.azurewebsites.net"
   }
+}
+
+# Staging environment web app
+resource "azurerm_linux_web_app" "web_staging" {
+  name                = "${var.webapp_name}-staging"
+  resource_group_name = azurerm_resource_group.main.name
+  location            = azurerm_resource_group.main.location
+  service_plan_id     = "/subscriptions/b936571e-af68-4dfe-8565-5410d483d1a5/resourceGroups/sbhub-rg/providers/Microsoft.Web/serverFarms/sbhub-app-service-plan"
+  
+  site_config {
+    application_stack {
+      node_version = "18-lts"
+    }
+  }
+  
+  app_settings = {
+    NODE_ENV     = "staging"
+    DB_HOST      = azurerm_postgresql_flexible_server.db.fqdn
+    DB_PORT      = "5432"
+    DB_NAME      = "session_buddy_hub_staging"
+    DB_USER      = var.db_admin
+    DB_PASSWORD  = var.db_password
+    JWT_SECRET   = "your-super-secret-jwt-key-here-make-it-long-and-random"
+    FRONTEND_URL = "https://${var.webapp_name}-staging.azurewebsites.net"
+  }
 } 
