@@ -14,16 +14,14 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
 import { query } from '../config/database.js';
 import app from '../server.js';
 
-// Mock the database query function
-const originalQuery = query;
-query.mockImplementation = (fn) => {
-  // Simple mock implementation
-  return fn;
-};
-
 describe('Authentication Endpoints', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
+  beforeEach(async () => {
+    // Clean up test data before each test
+    try {
+      await query('DELETE FROM users WHERE email LIKE $1', ['test%@example.com']);
+    } catch (error) {
+      // Ignore cleanup errors
+    }
   });
 
   describe('POST /api/auth/register', () => {
@@ -35,19 +33,6 @@ describe('Authentication Endpoints', () => {
         firstName: 'Test',
         lastName: 'User'
       };
-
-      // Mock database responses
-      query.mockResolvedValueOnce({ rows: [] }); // Check if user exists
-      query.mockResolvedValueOnce({ 
-        rows: [{ 
-          id: 1, 
-          username: userData.username, 
-          email: userData.email,
-          first_name: userData.firstName,
-          last_name: userData.lastName,
-          created_at: new Date()
-        }] 
-      }); // Insert user
 
       const response = await request(app)
         .post('/api/auth/register')
@@ -84,11 +69,13 @@ describe('Authentication Endpoints', () => {
         lastName: 'User'
       };
 
-      // Mock database to return existing user
-      query.mockResolvedValueOnce({ 
-        rows: [{ id: 1, email: userData.email }] 
-      });
+      // First, register a user
+      await request(app)
+        .post('/api/auth/register')
+        .send(userData)
+        .expect(201);
 
+      // Then try to register again with the same email
       const response = await request(app)
         .post('/api/auth/register')
         .send(userData)
@@ -100,25 +87,25 @@ describe('Authentication Endpoints', () => {
 
   describe('POST /api/auth/login', () => {
     it('should login user with valid credentials', async () => {
+      const userData = {
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'password123',
+        firstName: 'Test',
+        lastName: 'User'
+      };
+
+      // First register the user
+      await request(app)
+        .post('/api/auth/register')
+        .send(userData)
+        .expect(201);
+
+      // Then login
       const loginData = {
         email: 'test@example.com',
         password: 'password123'
       };
-
-      const hashedPassword = await bcrypt.hash('password123', 10);
-      
-      // Mock database response
-      query.mockResolvedValueOnce({
-        rows: [{
-          id: 1,
-          email: loginData.email,
-          password: hashedPassword,
-          username: 'testuser',
-          first_name: 'Test',
-          last_name: 'User',
-          is_verified: true
-        }]
-      });
 
       const response = await request(app)
         .post('/api/auth/login')
@@ -131,23 +118,25 @@ describe('Authentication Endpoints', () => {
     });
 
     it('should return 401 for invalid credentials', async () => {
+      const userData = {
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'password123',
+        firstName: 'Test',
+        lastName: 'User'
+      };
+
+      // First register the user
+      await request(app)
+        .post('/api/auth/register')
+        .send(userData)
+        .expect(201);
+
+      // Then try to login with wrong password
       const loginData = {
         email: 'test@example.com',
         password: 'wrongpassword'
       };
-
-      // Mock database response
-      query.mockResolvedValueOnce({
-        rows: [{
-          id: 1,
-          email: loginData.email,
-          password: await bcrypt.hash('correctpassword', 10),
-          username: 'testuser',
-          first_name: 'Test',
-          last_name: 'User',
-          is_verified: true
-        }]
-      });
 
       const response = await request(app)
         .post('/api/auth/login')
