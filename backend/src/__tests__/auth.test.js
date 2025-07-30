@@ -1,20 +1,25 @@
-const request = require('supertest');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const path = require('path');
-const dotenv = require('dotenv');
+import request from 'supertest';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import path from 'path';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
 
 // Setup environment for testing
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '../../.env') });
 
-// Mock database connection for testing
-jest.mock('../config/database.js', () => ({
-  query: jest.fn()
-}));
+// Import after setup
+import { query } from '../config/database.js';
+import app from '../server.js';
 
-// Import after mocking
-const { query } = require('../config/database.js');
-const app = require('../server.js');
+// Mock the database query function
+const originalQuery = query;
+query.mockImplementation = (fn) => {
+  // Simple mock implementation
+  return fn;
+};
 
 describe('Authentication Endpoints', () => {
   beforeEach(() => {
