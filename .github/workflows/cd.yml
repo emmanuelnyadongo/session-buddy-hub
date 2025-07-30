@@ -195,7 +195,7 @@ jobs:
     name: Deploy to Staging
     runs-on: ubuntu-latest
     needs: container-build
-    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    if: false  # Temporarily disabled until Azure credentials are configured
     environment: staging
     
     steps:
@@ -222,7 +222,7 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-latest
     needs: container-build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: false  # Temporarily disabled until Azure credentials are configured
     environment: production
     
     steps:
