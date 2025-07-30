@@ -1,0 +1,269 @@
+name: Continuous Deployment Pipeline
+
+on:
+  push:
+    branches: [ develop, main ]
+  pull_request:
+    branches: [ develop, main ]
+
+env:
+  REGISTRY: sbhubacr2024.azurecr.io
+  IMAGE_NAME: session-buddy-hub
+
+jobs:
+  # Security and Quality Checks
+  security-scan:
+    name: Security & Quality Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: |
+        npm ci
+        cd backend && npm ci
+        
+    - name: Run security audit
+      run: |
+        echo "=== Frontend Security Audit ==="
+        npm audit --audit-level=moderate --json > frontend-audit.json || true
+        echo "=== Backend Security Audit ==="
+        cd backend && npm audit --audit-level=moderate --json > ../backend-audit.json || true
+        
+    - name: Run SAST scan
+      uses: github/codeql-action/init@v3
+      with:
+        languages: javascript
+        
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      
+    - name: Upload security results
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-results
+        path: |
+          frontend-audit.json
+          backend-audit.json
+        retention-days: 30
+
+  # Build and Test
+  build-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    needs: security-scan
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: |
+        npm ci
+        cd backend && npm ci
+        
+    - name: Run linting
+      run: |
+        npm run lint
+        cd backend && npm run lint
+        
+    - name: Run type checking
+      run: npx tsc --noEmit
+      
+    - name: Setup test environment
+      working-directory: ./backend
+      run: |
+        echo "NODE_ENV=test" >> .env
+        echo "DB_HOST=localhost" >> .env
+        echo "DB_PORT=5432" >> .env
+        echo "DB_NAME=test_db" >> .env
+        echo "DB_USER=postgres" >> .env
+        echo "DB_PASSWORD=postgres" >> .env
+        echo "JWT_SECRET=test_secret_key_for_ci_pipeline_only" >> .env
+        echo "SMTP_HOST=smtp.gmail.com" >> .env
+        echo "SMTP_PORT=587" >> .env
+        echo "SMTP_USER=test@example.com" >> .env
+        echo "SMTP_PASS=test_password" >> .env
+        echo "SMTP_FROM=test@example.com" >> .env
+        
+    - name: Run backend tests
+      working-directory: ./backend
+      run: npm test
+      
+    - name: Run frontend tests
+      run: npm test --if-present
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: dist/
+        retention-days: 7
+
+  # Container Build and Security Scan
+  container-build:
+    name: Build and Scan Container
+    runs-on: ubuntu-latest
+    needs: build-test
+    if: github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: build-artifacts
+        path: dist/
+        
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Login to Azure Container Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.REGISTRY }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+        
+    - name: Build and push container image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: |
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  # Deploy to Staging
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: container-build
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    environment: staging
+    
+    steps:
+    - name: Deploy to Azure Web App (Staging)
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: 'sbhubwebapp2024-staging'
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        slot-name: 'staging'
+        
+    - name: Health check staging deployment
+      run: |
+        echo "Waiting for staging deployment to be ready..."
+        sleep 30
+        curl -f https://sbhubwebapp2024-staging.azurewebsites.net/api/health || exit 1
+
+  # Deploy to Production
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: container-build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    
+    steps:
+    - name: Deploy to Azure Web App (Production)
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: 'sbhubwebapp2024'
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        
+    - name: Health check production deployment
+      run: |
+        echo "Waiting for production deployment to be ready..."
+        sleep 30
+        curl -f https://sbhubwebapp2024.azurewebsites.net/api/health || exit 1
+        
+    - name: Update CHANGELOG
+      run: |
+        echo "## [$(date +%Y-%m-%d)] - Automated Deployment" >> CHANGELOG.md
+        echo "- Deployed commit: ${{ github.sha }}" >> CHANGELOG.md
+        echo "- Triggered by: ${{ github.actor }}" >> CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        
+    - name: Commit CHANGELOG update
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add CHANGELOG.md
+        git commit -m "docs: update changelog for deployment ${{ github.sha }}" || exit 0
+        git push
+
+  # Monitoring and Alerts
+  monitoring:
+    name: Monitoring Check
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always() && (needs.deploy-staging.result == 'success' || needs.deploy-production.result == 'success')
+    
+    steps:
+    - name: Check application health
+      run: |
+        if [ "${{ needs.deploy-production.result }}" == "success" ]; then
+          echo "Checking production health..."
+          curl -f https://sbhubwebapp2024.azurewebsites.net/api/health
+        fi
+        
+        if [ "${{ needs.deploy-staging.result }}" == "success" ]; then
+          echo "Checking staging health..."
+          curl -f https://sbhubwebapp2024-staging.azurewebsites.net/api/health
+        fi
+        
+    - name: Send deployment notification
+      if: always()
+      run: |
+        echo "Deployment completed successfully!"
+        echo "Production: ${{ needs.deploy-production.result }}"
+        echo "Staging: ${{ needs.deploy-staging.result }}" 

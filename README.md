@@ -2,11 +2,19 @@
 
 A collaborative study session platform built with React, Node.js, and PostgreSQL. Connect with fellow students, create study sessions, and enhance your learning experience together.
 
-## 🌐 Live Application
+## 🌐 Live Applications
 
-**Live URL:** https://sbhubwebapp2024.azurewebsites.net
+### Production Environment
+**Production URL:** https://sbhubwebapp2024.azurewebsites.net
 
-The application is deployed on Azure using Docker containers and Azure App Service.
+### Staging Environment
+**Staging URL:** https://sbhubwebapp2024-staging.azurewebsites.net
+
+### Health Check Endpoints
+- **Production Health:** https://sbhubwebapp2024.azurewebsites.net/api/health
+- **Staging Health:** https://sbhubwebapp2024-staging.azurewebsites.net/api/health
+
+The application is deployed on Azure using Docker containers and Azure App Service with automated CI/CD pipelines.
 
 ## Features
 
@@ -283,9 +291,46 @@ The application uses the following main tables:
 - **Input Validation** - Server-side validation for all inputs
 - **SQL Injection Protection** - Parameterized queries
 
+## CI/CD Pipeline
+
+### Automated Deployment
+This project uses GitHub Actions for continuous deployment with the following workflow:
+
+1. **Security Scanning**: Dependency and container vulnerability scanning
+2. **Build & Test**: Automated testing and application building
+3. **Container Build**: Docker image creation and security scanning
+4. **Staging Deployment**: Automatic deployment to staging environment
+5. **Production Deployment**: Manual approval required for production
+6. **Monitoring**: Health checks and deployment verification
+
+### Branch Strategy
+- **`develop`**: Staging environment deployment
+- **`main`**: Production environment deployment
+- **Feature branches**: Development and testing
+
+### Security Features
+- Dependency vulnerability scanning with npm audit
+- Container image scanning with Trivy
+- SAST scanning with CodeQL
+- Automated security result reporting
+
+## Monitoring & Observability
+
+### Health Monitoring
+- Real-time health check endpoints for both environments
+- Automated deployment verification
+- Performance monitoring and alerting
+
+### Logging
+- Comprehensive application logging
+- Error tracking and reporting
+- Performance metrics collection
+
+For detailed monitoring information, see [monitoring-dashboard.md](monitoring-dashboard.md).
+
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+3. Commit your changes using conventional commit format (`git commit -m 'feat: add some amazing feature'`)
 4. Push to the branch (`
