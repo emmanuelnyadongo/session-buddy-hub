@@ -210,10 +210,27 @@ jobs:
         app-name: 'sbhubwebapp2024-staging'
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
         
+    - name: Check deployment logs
+      run: |
+        echo "Checking deployment status..."
+        az webapp log tail --name sbhubwebapp2024-staging --resource-group sbhub-rg --timeout 30 || echo "Log tail timeout - this is normal"
+        
     - name: Health check staging deployment
       run: |
         echo "Waiting for staging deployment to be ready..."
-        sleep 30
+        sleep 60
+        echo "Attempting health check..."
+        for i in {1..5}; do
+          echo "Health check attempt $i..."
+          if curl -f https://sbhubwebapp2024-staging.azurewebsites.net/api/health; then
+            echo "Health check successful!"
+            break
+          else
+            echo "Health check failed, waiting 30 seconds..."
+            sleep 30
+          fi
+        done
+        # Final health check
         curl -f https://sbhubwebapp2024-staging.azurewebsites.net/api/health || exit 1
 
   # Deploy to Production
