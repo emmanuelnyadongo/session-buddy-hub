@@ -223,6 +223,15 @@ jobs:
         app-name: 'sbhubwebapp2024-staging'
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
         
+    - name: Verify container deployment
+      run: |
+        echo "=== Verifying Container Deployment ==="
+        echo "Checking if container image was deployed..."
+        az webapp config container show --name sbhubwebapp2024-staging --resource-group sbhub-rg
+        
+        echo "=== Checking Container Logs ==="
+        az webapp log tail --name sbhubwebapp2024-staging --resource-group sbhub-rg --timeout 60 || echo "Log tail timeout"
+        
     - name: Configure staging environment variables
       run: |
         echo "=== Setting up Staging Environment Variables ==="
@@ -235,6 +244,14 @@ jobs:
           DB_PASSWORD="SessionBuddyHub2024!" \
           JWT_SECRET="your-super-secret-jwt-key-here-make-it-long-and-random" \
           FRONTEND_URL="https://sbhubwebapp2024-staging.azurewebsites.net"
+          
+    - name: Configure Web App for Container
+      run: |
+        echo "=== Configuring Web App for Container ==="
+        az webapp config set --name sbhubwebapp2024-staging --resource-group sbhub-rg --linux-fx-version "DOCKER|${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+        
+        echo "=== Restarting Web App ==="
+        az webapp restart --name sbhubwebapp2024-staging --resource-group sbhub-rg
         
     - name: Check deployment logs
       run: |
