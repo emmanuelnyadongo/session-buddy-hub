@@ -8,8 +8,12 @@ COPY backend ./backend
 # Copy pre-built frontend to backend public (for production serving)
 COPY ./dist ./backend/dist
 
+# Copy startup script
+COPY startup.sh ./backend/startup.sh
+RUN chmod +x ./backend/startup.sh
+
 # --- Production Stage ---
 WORKDIR /app/backend
-ENV NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV:-production}
 EXPOSE 5000
-CMD ["node", "src/server.js"] 
+CMD ["./startup.sh"] 
