@@ -8,7 +8,7 @@ on:
 
 # Add permissions for CodeQL and security scanning
 permissions:
-  contents: read
+  contents: write
   security-events: write
   actions: read
   pull-requests: read
@@ -343,6 +343,13 @@ jobs:
         sleep 30
         curl -f https://sbhubwebapp2024.azurewebsites.net/api/health || exit 1
         
+    - name: Checkout code for CHANGELOG update
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+        
     - name: Update CHANGELOG
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
@@ -354,11 +361,25 @@ jobs:
     - name: Commit CHANGELOG update
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
+        # Check if we're in a git repository
+        if [ ! -d ".git" ]; then
+          echo "Not in a git repository, skipping CHANGELOG commit"
+          exit 0
+        fi
+        
+        # Configure git
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
+        
+        # Add and commit changes
         git add CHANGELOG.md
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+          exit 0
+        fi
+        
         git commit -m "docs: update changelog for deployment ${{ github.sha }}" || exit 0
-        git push origin main
+        git push origin main || echo "Failed to push CHANGELOG update, but continuing..."
         
     - name: Skip CHANGELOG update for PRs
       if: github.event_name == 'pull_request'
