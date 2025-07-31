@@ -11,7 +11,7 @@
 **Required Screenshots:**
 1. Azure Resource Group showing all resources (Database, Container Registry, Web App)
 2. Azure Container Registry with your Docker image
-3. Azure Web App configuration and settings
+3. Azure Web App configuration and setting
 4. Your application running in browser at the live URL
 5. Database connection working (if you can show this)
 
