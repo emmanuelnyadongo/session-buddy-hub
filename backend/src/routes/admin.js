@@ -143,6 +143,79 @@ router.post('/init-db', async (req, res) => {
   }
 });
 
+// Debug endpoint to check database connection and tables
+router.get('/debug', async (req, res) => {
+  try {
+    // Only allow in development or staging
+    if (process.env.NODE_ENV === 'production') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Debug endpoint not allowed in production' 
+      });
+    }
+
+    console.log('Debug endpoint called');
+
+    // Test database connection
+    const client = await pool.connect();
+    console.log('Database connection successful');
+
+    // Check if users table exists
+    const tableCheck = await client.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'users'
+      );
+    `);
+    
+    const usersTableExists = tableCheck.rows[0].exists;
+    console.log('Users table exists:', usersTableExists);
+
+    // If table exists, get table structure
+    let tableStructure = null;
+    if (usersTableExists) {
+      const structureResult = await client.query(`
+        SELECT column_name, data_type, is_nullable 
+        FROM information_schema.columns 
+        WHERE table_name = 'users' 
+        ORDER BY ordinal_position;
+      `);
+      tableStructure = structureResult.rows;
+    }
+
+    // Count users
+    let userCount = 0;
+    if (usersTableExists) {
+      const countResult = await client.query('SELECT COUNT(*) as count FROM users');
+      userCount = parseInt(countResult.rows[0].count);
+    }
+
+    client.release();
+
+    res.status(200).json({
+      success: true,
+      debug: {
+        environment: process.env.NODE_ENV,
+        databaseConnected: true,
+        usersTableExists,
+        tableStructure,
+        userCount,
+        timestamp: new Date().toISOString()
+      }
+    });
+
+  } catch (error) {
+    console.error('Debug endpoint error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Debug endpoint error',
+      error: error.message,
+      stack: error.stack
+    });
+  }
+});
+
 // List all users endpoint (only for development/staging)
 router.get('/users', async (req, res) => {
   try {
