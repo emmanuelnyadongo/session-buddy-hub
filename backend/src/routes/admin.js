@@ -32,13 +32,21 @@ router.post('/create-test-user', async (req, res) => {
       // Create users table
       await pool.query(`
         CREATE TABLE users (
-          id SERIAL PRIMARY KEY,
+          id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
           name VARCHAR(255) NOT NULL,
           email VARCHAR(255) UNIQUE NOT NULL,
-          password VARCHAR(255) NOT NULL,
+          password_hash VARCHAR(255) NOT NULL,
           university VARCHAR(255),
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          avatar_url TEXT,
+          bio TEXT,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+          last_login TIMESTAMP WITH TIME ZONE,
+          is_active BOOLEAN DEFAULT TRUE,
+          email_verified BOOLEAN DEFAULT FALSE,
+          verification_token VARCHAR(255),
+          reset_password_token VARCHAR(255),
+          reset_password_expires TIMESTAMP WITH TIME ZONE
         );
       `);
       console.log('Users table created');
@@ -65,7 +73,7 @@ router.post('/create-test-user', async (req, res) => {
     const hashedPassword = await bcrypt.hash('password123', 10);
     
     const result = await pool.query(`
-      INSERT INTO users (name, email, password, university)
+      INSERT INTO users (name, email, password_hash, university)
       VALUES ($1, $2, $3, $4)
       RETURNING id, name, email, university, created_at
     `, [
