@@ -344,6 +344,7 @@ jobs:
         curl -f https://sbhubwebapp2024.azurewebsites.net/api/health || exit 1
         
     - name: Update CHANGELOG
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
         echo "## [$(date +%Y-%m-%d)] - Automated Deployment" >> CHANGELOG.md
         echo "- Deployed commit: ${{ github.sha }}" >> CHANGELOG.md
@@ -351,12 +352,19 @@ jobs:
         echo "" >> CHANGELOG.md
         
     - name: Commit CHANGELOG update
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add CHANGELOG.md
         git commit -m "docs: update changelog for deployment ${{ github.sha }}" || exit 0
-        git push
+        git push origin main
+        
+    - name: Skip CHANGELOG update for PRs
+      if: github.event_name == 'pull_request'
+      run: |
+        echo "Skipping CHANGELOG update - this is a pull request"
+        echo "CHANGELOG will be updated when PR is merged to main"
 
   # Monitoring and Alerts
   monitoring:
