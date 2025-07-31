@@ -12,6 +12,7 @@ import { fileURLToPath } from 'url';
 import { router as authRoutes } from './routes/auth.js';
 import { router as userRoutes } from './routes/users.js';
 import { router as sessionRoutes } from './routes/sessions.js';
+import { router as adminRoutes } from './routes/admin.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFound } from './middleware/notFound.js';
 import { authenticateToken } from './middleware/auth.js';
@@ -91,6 +92,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', authenticateToken, userRoutes);
 app.use('/api/sessions', authenticateToken, sessionRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Serve static files in production and staging
 if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
