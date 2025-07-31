@@ -248,10 +248,25 @@ jobs:
     - name: Configure Web App for Container
       run: |
         echo "=== Configuring Web App for Container ==="
+        
+        # Force configure the web app for Docker
+        echo "Setting Linux FX version to Docker..."
         az webapp config set --name sbhubwebapp2024-staging --resource-group sbhub-rg --linux-fx-version "DOCKER|${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+        
+        # Add Docker-specific environment variables
+        echo "Adding Docker environment variables..."
+        az webapp config appsettings set --name sbhubwebapp2024-staging --resource-group sbhub-rg --settings \
+          DOCKER_ENABLE_CI=true \
+          WEBSITES_ENABLE_APP_SERVICE_STORAGE=false \
+          DOCKER_REGISTRY_SERVER_URL="${{ env.REGISTRY }}" \
+          DOCKER_REGISTRY_SERVER_USERNAME="${{ secrets.ACR_USERNAME }}" \
+          DOCKER_REGISTRY_SERVER_PASSWORD="${{ secrets.ACR_PASSWORD }}"
         
         echo "=== Restarting Web App ==="
         az webapp restart --name sbhubwebapp2024-staging --resource-group sbhub-rg
+        
+        echo "=== Waiting for restart to complete ==="
+        sleep 30
         
     - name: Check deployment logs
       run: |
