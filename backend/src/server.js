@@ -12,6 +12,7 @@ import { fileURLToPath } from 'url';
 import { router as authRoutes } from './routes/auth.js';
 import { router as userRoutes } from './routes/users.js';
 import { router as sessionRoutes } from './routes/sessions.js';
+import adminRoutes from './routes/admin.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFound } from './middleware/notFound.js';
 import { authenticateToken } from './middleware/auth.js';
@@ -91,17 +92,24 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', authenticateToken, userRoutes);
 app.use('/api/sessions', authenticateToken, sessionRoutes);
+app.use('/api/admin', adminRoutes);
 
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
+// Serve static files in production and staging
+if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
   console.log('__dirname:', __dirname);
   console.log('Static path:', path.join(__dirname, '../dist'));
   console.log('Index path:', path.join(__dirname, '../dist/index.html'));
   
   app.use(express.static(path.join(__dirname, '../dist')));
   
+  // Catch-all route for SPA - serve index.html for any non-API route
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../dist/index.html'));
+  });
+} else {
+  // In development, just return a message for non-API routes
+  app.get('/', (req, res) => {
+    res.json({ message: 'Session Buddy Hub API - Development Mode' });
   });
 }
 
