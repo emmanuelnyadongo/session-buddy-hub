@@ -92,16 +92,22 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', authenticateToken, userRoutes);
 app.use('/api/sessions', authenticateToken, sessionRoutes);
 
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
+// Serve static files in production and staging
+if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
   console.log('__dirname:', __dirname);
   console.log('Static path:', path.join(__dirname, '../dist'));
   console.log('Index path:', path.join(__dirname, '../dist/index.html'));
   
   app.use(express.static(path.join(__dirname, '../dist')));
   
+  // Catch-all route for SPA - serve index.html for any non-API route
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../dist/index.html'));
+  });
+} else {
+  // In development, just return a message for non-API routes
+  app.get('/', (req, res) => {
+    res.json({ message: 'Session Buddy Hub API - Development Mode' });
   });
 }
 
