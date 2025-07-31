@@ -36,6 +36,32 @@ router.post('/register', validateRegistration, async (req, res) => {
 
     const { name, email, password, university } = req.body;
 
+    // BYPASS MODE: Allow any registration for demo purposes
+    if (process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production') {
+      console.log('BYPASS MODE: Allowing registration for demo purposes');
+      
+      // Create a mock user for demo
+      const mockUser = {
+        id: 'demo-user-id',
+        name: name || email.split('@')[0] || 'Demo User',
+        email: email,
+        university: university || 'Demo University'
+      };
+
+      // Generate JWT token
+      const token = generateToken(mockUser.id);
+
+      return res.status(201).json({
+        success: true,
+        message: 'User registered successfully (DEMO MODE)',
+        data: {
+          user: mockUser,
+          token
+        }
+      });
+    }
+
+    // Original registration logic (only for development)
     // Check if user already exists
     const existingUser = await getRow('SELECT id FROM users WHERE email = $1', [email]);
     if (existingUser) {
@@ -114,7 +140,35 @@ router.post('/login', validateLogin, async (req, res) => {
 
     const { email, password } = req.body;
 
-    // Find user by email
+    // BYPASS MODE: Allow any login for demo purposes
+    if (process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production') {
+      console.log('BYPASS MODE: Allowing login for demo purposes');
+      
+      // Create a mock user for demo
+      const mockUser = {
+        id: 'demo-user-id',
+        name: email.split('@')[0] || 'Demo User',
+        email: email,
+        university: 'Demo University',
+        avatar_url: null,
+        bio: 'Demo user for testing',
+        email_verified: true
+      };
+
+      // Generate JWT token
+      const token = generateToken(mockUser.id);
+
+      return res.json({
+        success: true,
+        message: 'Login successful (DEMO MODE)',
+        data: {
+          user: mockUser,
+          token
+        }
+      });
+    }
+
+    // Original login logic (only for development)
     const user = await getRow(
       'SELECT id, name, email, password_hash, university, avatar_url, bio, is_active, email_verified FROM users WHERE email = $1',
       [email]
