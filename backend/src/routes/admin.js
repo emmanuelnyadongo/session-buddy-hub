@@ -171,4 +171,4 @@ router.get('/users', async (req, res) => {
   }
 });
 
-export { router as adminRoutes }; 
+export default router; 
