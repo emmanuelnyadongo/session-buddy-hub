@@ -67,7 +67,7 @@ const Index = () => {
                 <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
               <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                StudyBuddy - Docker Configuration Fix!
+                StudyBuddy Hub
               </h1>
             </div>
             
